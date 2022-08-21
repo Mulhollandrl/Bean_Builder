@@ -3,22 +3,26 @@ package com.mulholland.beanbuilder
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.mulholland.beanbuilder.ui.theme.BeanBuilderTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             BeanBuilderTheme {
                 BeanBuilder()
@@ -29,52 +33,222 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BeanBuilder() {
-    var showShop by remember { mutableStateOf(true) }
+    var showHome by remember { mutableStateOf(true) }
 
-    if (showShop) {
-        Shop(onContinueClicked = { showShop = false })
+    if (showHome) {
+        BeanScreen(onContinueClicked = { showHome = false })
     } else {
-        BeanScreen(onContinueClicked = { showShop = true })
+        Shop(onContinueClicked = { showHome = true })
     }
 }
 
 @Composable
 fun BeanScreen(onContinueClicked: () -> Unit) {
-    Column {
-        Row {
-            Button(onClick = {
-                onContinueClicked
-            }) {
+    var beans by rememberSaveable { mutableStateOf(0) }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Button(onClick = onContinueClicked) {
                 Text(text = "Shop")
             }
             Button(onClick = {}) {
                 Text(text = "Home")
             }
         }
-        Text(text = "Beans")
+
+        Button(
+            onClick = { beans += 1 },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Transparent
+            )
+        ) {
+            Image(
+                painter = painterResource(R.drawable.bean),
+                contentDescription = "Big Bean",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(300.dp)
+                    .width(256.dp)
+            )
+        }
+        
+        Text(text = "Beans: $beans")
     }
 }
 
 @Composable
 fun Shop(onContinueClicked: () -> Unit) {
-    var text by remember { mutableStateOf("Shop") }
+    var greenBeans by rememberSaveable { mutableStateOf(0) }
+    var kidneyBeans by rememberSaveable { mutableStateOf(0) }
+    var coffeeBeans by rememberSaveable { mutableStateOf(0) }
+    var pintoBeans by rememberSaveable { mutableStateOf(0) }
+    var chocolateBeans by rememberSaveable { mutableStateOf(0) }
+    var jellyBeans by rememberSaveable { mutableStateOf(0) }
 
     Column (
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        Row (
-
-        ) {
-            Button(onClick = {text = "Happy"}) {
+        Row {
+            Button(onClick = {}) {
                 Text(text = "Shop")
             }
-            Button(onClick = {
-                onContinueClicked
-            }) {
+            Button(onClick = onContinueClicked) {
                 Text(text = "Home")
             }
         }
-        Text(text = text)
+
+        Row {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    onClick = { greenBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.greenbeans),
+                        contentDescription = "Green Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $greenBeans")
+            }
+
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = { kidneyBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.kidneybeans),
+                        contentDescription = "Kidney Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $kidneyBeans")
+            }
+        }
+
+        Row {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = { coffeeBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.coffeebeans),
+                        contentDescription = "Coffee Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $coffeeBeans")
+            }
+
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = { pintoBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.pintobeans),
+                        contentDescription = "Pinto Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $pintoBeans")
+            }
+        }
+
+        Row {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = { chocolateBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.chocolatebeans),
+                        contentDescription = "Chocolate Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $chocolateBeans")
+            }
+
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Button(
+                    onClick = { jellyBeans += 1 },
+                    modifier = Modifier.clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.jellybeans),
+                        contentDescription = "Kidney Beans",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(128.dp)
+                    )
+                }
+
+                Text(text = "Owned: $jellyBeans")
+            }
+        }
     }
 }
 
@@ -84,5 +258,21 @@ fun Shop(onContinueClicked: () -> Unit) {
 fun DefaultPreview() {
     BeanBuilderTheme {
         BeanBuilder()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopPreview() {
+    BeanBuilderTheme {
+        Shop({})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomePreview() {
+    BeanBuilderTheme {
+        BeanScreen({})
     }
 }
