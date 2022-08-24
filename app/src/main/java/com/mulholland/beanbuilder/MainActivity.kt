@@ -1,5 +1,6 @@
 package com.mulholland.beanbuilder
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mulholland.beanbuilder.ui.theme.BeanBuilderTheme
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,21 +34,92 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun BeanBuilder() {
     var showHome by remember { mutableStateOf(true) }
 
+    var beans by rememberSaveable { mutableStateOf(0) }
+
+    var greenBeans by rememberSaveable { mutableStateOf(0) }
+    var kidneyBeans by rememberSaveable { mutableStateOf(0) }
+    var coffeeBeans by rememberSaveable { mutableStateOf(0) }
+    var pintoBeans by rememberSaveable { mutableStateOf(0) }
+    var chocolateBeans by rememberSaveable { mutableStateOf(0) }
+    var jellyBeans by rememberSaveable { mutableStateOf(0) }
+
     if (showHome) {
-        BeanScreen(onContinueClicked = { showHome = false })
+        BeanScreen(
+            beanAmount = beans,
+            onContinueClicked = { showHome = false },
+            onBeanIncrease = { beans += 1 }
+        )
     } else {
-        Shop(onContinueClicked = { showHome = true })
+        Shop(
+            beanAmount = beans,
+            onContinueClicked = { showHome = true },
+            increaseGreenBeans = { fun increaseDecrease(){
+                if (beans > 10) {
+                    greenBeans += 1
+                    beans -= 10
+                }
+            }
+                increaseDecrease() },
+            increaseKidneyBeans = { fun increaseDecrease(){
+                if (beans > 100) {
+                    kidneyBeans += 1
+                    beans -= 100
+                }
+            }
+                increaseDecrease() },
+            increaseCoffeeBeans = { fun increaseDecrease(){
+                if (beans > 1000) {
+                    coffeeBeans += 1
+                    beans -= 1000
+                }
+            }
+                increaseDecrease() },
+            increasePintoBeans = { fun increaseDecrease(){
+                if (beans > 10000) {
+                    pintoBeans += 1
+                    beans -= 10000
+                }
+            }
+                increaseDecrease() },
+            increaseChocolateBeans = { fun increaseDecrease(){
+                if (beans > 100000) {
+                    chocolateBeans += 1
+                    beans -= 100000
+                }
+            }
+                increaseDecrease() },
+            increaseJellyBeans = { fun increaseDecrease(){
+                if (beans > 1000000) {
+                    jellyBeans += 1
+                    beans -= 1000000
+                }
+            }
+                increaseDecrease() },
+            greenBeans = greenBeans,
+            kidneyBeans = kidneyBeans,
+            coffeeBeans = coffeeBeans,
+            pintoBeans = pintoBeans,
+            chocolateBeans = chocolateBeans,
+            jellyBeans = jellyBeans
+        )
+    }
+
+    MainScope().launch {
+        while(true) {
+            beans += (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
+        }
     }
 }
 
 @Composable
-fun BeanScreen(onContinueClicked: () -> Unit) {
-    var beans by rememberSaveable { mutableStateOf(0) }
-
+fun BeanScreen(beanAmount: Int, onContinueClicked: () -> Unit, onBeanIncrease: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -64,7 +138,7 @@ fun BeanScreen(onContinueClicked: () -> Unit) {
         }
 
         Button(
-            onClick = { beans += 1 },
+            onClick = onBeanIncrease,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent
             )
@@ -79,19 +153,27 @@ fun BeanScreen(onContinueClicked: () -> Unit) {
             )
         }
         
-        Text(text = "Beans: $beans")
+        Text(text = "Beans: $beanAmount")
     }
 }
 
 @Composable
-fun Shop(onContinueClicked: () -> Unit) {
-    var greenBeans by rememberSaveable { mutableStateOf(0) }
-    var kidneyBeans by rememberSaveable { mutableStateOf(0) }
-    var coffeeBeans by rememberSaveable { mutableStateOf(0) }
-    var pintoBeans by rememberSaveable { mutableStateOf(0) }
-    var chocolateBeans by rememberSaveable { mutableStateOf(0) }
-    var jellyBeans by rememberSaveable { mutableStateOf(0) }
-
+fun Shop(
+    beanAmount: Int,
+    onContinueClicked: () -> Unit,
+    increaseGreenBeans: () -> Unit,
+    increaseKidneyBeans: () -> Unit,
+    increaseCoffeeBeans: () -> Unit,
+    increasePintoBeans: () -> Unit,
+    increaseChocolateBeans: () -> Unit,
+    increaseJellyBeans: () -> Unit,
+    greenBeans: Int,
+    kidneyBeans: Int,
+    coffeeBeans: Int,
+    pintoBeans: Int,
+    chocolateBeans: Int,
+    jellyBeans: Int
+) {
     Column (
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,7 +194,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { greenBeans += 1 },
+                    onClick = increaseGreenBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -135,7 +217,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ){
                 Button(
-                    onClick = { kidneyBeans += 1 },
+                    onClick = increaseKidneyBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -160,7 +242,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ){
                 Button(
-                    onClick = { coffeeBeans += 1 },
+                    onClick = increaseCoffeeBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -183,7 +265,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ){
                 Button(
-                    onClick = { pintoBeans += 1 },
+                    onClick = increasePintoBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -208,7 +290,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ){
                 Button(
-                    onClick = { chocolateBeans += 1 },
+                    onClick = increaseChocolateBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -231,7 +313,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ){
                 Button(
-                    onClick = { jellyBeans += 1 },
+                    onClick = increaseJellyBeans,
                     modifier = Modifier.clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent
@@ -239,7 +321,7 @@ fun Shop(onContinueClicked: () -> Unit) {
                 ) {
                     Image(
                         painter = painterResource(R.drawable.jellybeans),
-                        contentDescription = "Kidney Beans",
+                        contentDescription = "Jelly Beans",
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(128.dp)
@@ -265,7 +347,7 @@ fun DefaultPreview() {
 @Composable
 fun ShopPreview() {
     BeanBuilderTheme {
-        Shop({})
+        Shop(0, {}, {}, {}, {}, {}, {}, {}, 0, 0, 0, 0, 0, 0, )
     }
 }
 
@@ -273,6 +355,6 @@ fun ShopPreview() {
 @Composable
 fun HomePreview() {
     BeanBuilderTheme {
-        BeanScreen({})
+        BeanScreen(0, {}, {})
     }
 }
