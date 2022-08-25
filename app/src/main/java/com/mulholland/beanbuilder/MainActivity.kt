@@ -2,6 +2,8 @@ package com.mulholland.beanbuilder
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -20,7 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mulholland.beanbuilder.ui.theme.BeanBuilderTheme
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.concurrent.schedule
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +44,8 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun BeanBuilder() {
+    val coroutineScope = rememberCoroutineScope()
+
     var showHome by remember { mutableStateOf(true) }
 
     var beans by rememberSaveable { mutableStateOf(0) }
@@ -49,6 +56,13 @@ fun BeanBuilder() {
     var pintoBeans by rememberSaveable { mutableStateOf(0) }
     var chocolateBeans by rememberSaveable { mutableStateOf(0) }
     var jellyBeans by rememberSaveable { mutableStateOf(0) }
+
+    coroutineScope.launch {
+        beans = updateBeans(
+            currentBeans = beans,
+            updateAmount = (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
+        )
+    }
 
     if (showHome) {
         BeanScreen(
@@ -109,12 +123,6 @@ fun BeanBuilder() {
             chocolateBeans = chocolateBeans,
             jellyBeans = jellyBeans
         )
-    }
-
-    MainScope().launch {
-        while(true) {
-            beans += (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
-        }
     }
 }
 
@@ -356,5 +364,15 @@ fun ShopPreview() {
 fun HomePreview() {
     BeanBuilderTheme {
         BeanScreen(0, {}, {})
+    }
+}
+
+fun updateBeans(currentBeans: Int, updateAmount: Int): Int {
+    var newBeans = 0
+
+    while(true) {
+        Thread.sleep(1000L)
+
+        return currentBeans + updateAmount
     }
 }
