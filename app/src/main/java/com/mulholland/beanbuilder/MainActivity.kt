@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun BeanBuilder() {
     val coroutineScope = rememberCoroutineScope()
@@ -57,12 +56,12 @@ fun BeanBuilder() {
     var chocolateBeans by rememberSaveable { mutableStateOf(0) }
     var jellyBeans by rememberSaveable { mutableStateOf(0) }
 
-    coroutineScope.launch {
+    LaunchedEffect(key1 = true, block = {
         beans = updateBeans(
             currentBeans = beans,
             updateAmount = (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
         )
-    }
+    })
 
     if (showHome) {
         BeanScreen(
