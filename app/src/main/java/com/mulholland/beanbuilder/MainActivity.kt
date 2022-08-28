@@ -1,9 +1,6 @@
 package com.mulholland.beanbuilder
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -21,11 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mulholland.beanbuilder.ui.theme.BeanBuilderTheme
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.concurrent.schedule
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +36,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BeanBuilder() {
-    val coroutineScope = rememberCoroutineScope()
-
     var showHome by remember { mutableStateOf(true) }
 
-    var beans by rememberSaveable { mutableStateOf(0) }
+    var beans : Long by rememberSaveable { mutableStateOf(0) }
 
     var greenBeans by rememberSaveable { mutableStateOf(0) }
     var kidneyBeans by rememberSaveable { mutableStateOf(0) }
@@ -56,22 +47,21 @@ fun BeanBuilder() {
     var chocolateBeans by rememberSaveable { mutableStateOf(0) }
     var jellyBeans by rememberSaveable { mutableStateOf(0) }
 
-    LaunchedEffect(key1 = true, block = {
-        beans = updateBeans(
-            currentBeans = beans,
-            updateAmount = (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
-        )
-    })
-
     if (showHome) {
+        val updateAmount by remember { mutableStateOf((greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans))}
+
+        LaunchedEffect(key1 = true) {
+            updateBeans {
+                beans += updateAmount
+            }
+        }
+
         BeanScreen(
             beanAmount = beans,
-            onContinueClicked = { showHome = false },
-            onBeanIncrease = { beans += 1 }
-        )
+            onContinueClicked = { showHome = false }
+        ) { beans += 1 }
     } else {
         Shop(
-            beanAmount = beans,
             onContinueClicked = { showHome = true },
             increaseGreenBeans = { fun increaseDecrease(){
                 if (beans > 10) {
@@ -126,7 +116,7 @@ fun BeanBuilder() {
 }
 
 @Composable
-fun BeanScreen(beanAmount: Int, onContinueClicked: () -> Unit, onBeanIncrease: () -> Unit) {
+fun BeanScreen(beanAmount: Long, onContinueClicked: () -> Unit, onBeanIncrease: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -166,7 +156,6 @@ fun BeanScreen(beanAmount: Int, onContinueClicked: () -> Unit, onBeanIncrease: (
 
 @Composable
 fun Shop(
-    beanAmount: Int,
     onContinueClicked: () -> Unit,
     increaseGreenBeans: () -> Unit,
     increaseKidneyBeans: () -> Unit,
@@ -354,7 +343,7 @@ fun DefaultPreview() {
 @Composable
 fun ShopPreview() {
     BeanBuilderTheme {
-        Shop(0, {}, {}, {}, {}, {}, {}, {}, 0, 0, 0, 0, 0, 0, )
+        Shop({}, {}, {}, {}, {}, {}, {}, 0, 0, 0, 0, 0, 0)
     }
 }
 
@@ -362,16 +351,17 @@ fun ShopPreview() {
 @Composable
 fun HomePreview() {
     BeanBuilderTheme {
-        BeanScreen(0, {}, {})
+        BeanScreen(0, {}) {}
     }
 }
 
-fun updateBeans(currentBeans: Int, updateAmount: Int): Int {
-    var newBeans = 0
+fun updateBeans(update:() -> Unit) {
+    val task = object : TimerTask() {
+        override fun run() {
+            update()
+        }
 
-    while(true) {
-        Thread.sleep(1000L)
-
-        return currentBeans + updateAmount
     }
+    val timer = Timer()
+    timer.scheduleAtFixedRate(task, 1000, 1000)
 }
