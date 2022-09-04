@@ -1,9 +1,11 @@
 package com.mulholland.beanbuilder
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +39,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BeanBuilder() {
+    var blueTheme by remember { mutableStateOf(true) }
     var showHome by remember { mutableStateOf(true) }
+
+    val shopPlayer = MediaPlayer.create(LocalContext.current, R.raw.shop)
 
     var beans : Long by rememberSaveable { mutableStateOf(0) }
 
@@ -47,86 +53,117 @@ fun BeanBuilder() {
     var chocolateBeans by rememberSaveable { mutableStateOf(0) }
     var jellyBeans by rememberSaveable { mutableStateOf(0) }
 
-    if (showHome) {
-        val updateAmount by remember { mutableStateOf((greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans))}
-
-        LaunchedEffect(key1 = true) {
-            updateBeans {
-                beans += updateAmount
-            }
+    LaunchedEffect(key1 = showHome) {
+        val updateAmount = (greenBeans) + (10 * kidneyBeans) + (100 * coffeeBeans) + (1000 * pintoBeans) + (10000 * chocolateBeans) + (100000 * jellyBeans)
+        updateBeans {
+            beans += updateAmount
         }
+    }
 
-        BeanScreen(
-            beanAmount = beans,
-            onContinueClicked = { showHome = false }
-        ) { beans += 1 }
-    } else {
-        Shop(
-            onContinueClicked = { showHome = true },
-            increaseGreenBeans = { fun increaseDecrease(){
-                if (beans > 10) {
-                    greenBeans += 1
-                    beans -= 10
-                }
-            }
-                increaseDecrease() },
-            increaseKidneyBeans = { fun increaseDecrease(){
-                if (beans > 100) {
-                    kidneyBeans += 1
-                    beans -= 100
-                }
-            }
-                increaseDecrease() },
-            increaseCoffeeBeans = { fun increaseDecrease(){
-                if (beans > 1000) {
-                    coffeeBeans += 1
-                    beans -= 1000
-                }
-            }
-                increaseDecrease() },
-            increasePintoBeans = { fun increaseDecrease(){
-                if (beans > 10000) {
-                    pintoBeans += 1
-                    beans -= 10000
-                }
-            }
-                increaseDecrease() },
-            increaseChocolateBeans = { fun increaseDecrease(){
-                if (beans > 100000) {
-                    chocolateBeans += 1
-                    beans -= 100000
-                }
-            }
-                increaseDecrease() },
-            increaseJellyBeans = { fun increaseDecrease(){
-                if (beans > 1000000) {
-                    jellyBeans += 1
-                    beans -= 1000000
-                }
-            }
-                increaseDecrease() },
-            greenBeans = greenBeans,
-            kidneyBeans = kidneyBeans,
-            coffeeBeans = coffeeBeans,
-            pintoBeans = pintoBeans,
-            chocolateBeans = chocolateBeans,
-            jellyBeans = jellyBeans
-        )
+    BeanBuilderTheme(darkTheme = !blueTheme) {
+        if (showHome) {
+            BeanScreen(
+                beanAmount = beans,
+                onShopClicked = { showHome = false },
+                onThemeClicked = { blueTheme = !blueTheme},
+                onBeanIncrease = { beans += 1 }
+            )
+        } else {
+            shopPlayer.start()
+            Shop(
+                onHomeClicked = { showHome = true },
+                increaseGreenBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 10) {
+                            greenBeans += 1
+                            beans -= 10
+                        }
+                    }
+                    increaseDecrease()
+                },
+                increaseKidneyBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 100) {
+                            kidneyBeans += 1
+                            beans -= 100
+                        }
+                    }
+                    increaseDecrease()
+                },
+                increaseCoffeeBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 1000) {
+                            coffeeBeans += 1
+                            beans -= 1000
+                        }
+                    }
+                    increaseDecrease()
+                },
+                increasePintoBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 10000) {
+                            pintoBeans += 1
+                            beans -= 10000
+                        }
+                    }
+                    increaseDecrease()
+                },
+                increaseChocolateBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 100000) {
+                            chocolateBeans += 1
+                            beans -= 100000
+                        }
+                    }
+                    increaseDecrease()
+                },
+                increaseJellyBeans = {
+                    fun increaseDecrease() {
+                        if (beans >= 1000000) {
+                            jellyBeans += 1
+                            beans -= 1000000
+                        }
+                    }
+                    increaseDecrease()
+                },
+                greenBeans = greenBeans,
+                kidneyBeans = kidneyBeans,
+                coffeeBeans = coffeeBeans,
+                pintoBeans = pintoBeans,
+                chocolateBeans = chocolateBeans,
+                jellyBeans = jellyBeans
+            )
+        }
     }
 }
 
 @Composable
-fun BeanScreen(beanAmount: Long, onContinueClicked: () -> Unit, onBeanIncrease: () -> Unit) {
+fun BeanScreen(
+    beanAmount: Long, onShopClicked: () -> Unit,
+    onThemeClicked: () -> Unit,
+    onBeanIncrease: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.background(color = MaterialTheme.colors.secondary)
+    ) {
+        Button(onClick = onThemeClicked) {
+            Text(text = "Switch Theme")
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.secondary),
     ) {
         Row(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Button(onClick = onContinueClicked) {
+            Button(onClick = onShopClicked) {
                 Text(text = "Shop")
             }
             Button(onClick = {}) {
@@ -150,13 +187,16 @@ fun BeanScreen(beanAmount: Long, onContinueClicked: () -> Unit, onBeanIncrease: 
             )
         }
         
-        Text(text = "Beans: $beanAmount")
+        Text(
+            text = "Beans: $beanAmount",
+            color = MaterialTheme.colors.onSecondary
+        )
     }
 }
 
 @Composable
 fun Shop(
-    onContinueClicked: () -> Unit,
+    onHomeClicked: () -> Unit,
     increaseGreenBeans: () -> Unit,
     increaseKidneyBeans: () -> Unit,
     increaseCoffeeBeans: () -> Unit,
@@ -173,13 +213,15 @@ fun Shop(
     Column (
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.secondary)
     ) {
         Row {
             Button(onClick = {}) {
                 Text(text = "Shop")
             }
-            Button(onClick = onContinueClicked) {
+            Button(onClick = onHomeClicked) {
                 Text(text = "Home")
             }
         }
@@ -205,7 +247,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $greenBeans")
+                Text(
+                    text = "Owned: $greenBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
 
             Column (
@@ -228,7 +273,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $kidneyBeans")
+                Text(
+                    text = "Owned: $kidneyBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
         }
 
@@ -253,7 +301,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $coffeeBeans")
+                Text(
+                    text = "Owned: $coffeeBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
 
             Column (
@@ -276,7 +327,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $pintoBeans")
+                Text(
+                    text = "Owned: $pintoBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
         }
 
@@ -301,7 +355,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $chocolateBeans")
+                Text(
+                    text = "Owned: $chocolateBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
 
             Column (
@@ -324,7 +381,10 @@ fun Shop(
                     )
                 }
 
-                Text(text = "Owned: $jellyBeans")
+                Text(
+                    text = "Owned: $jellyBeans",
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
         }
     }
@@ -343,7 +403,7 @@ fun DefaultPreview() {
 @Composable
 fun ShopPreview() {
     BeanBuilderTheme {
-        Shop({}, {}, {}, {}, {}, {}, {}, 0, 0, 0, 0, 0, 0)
+        Shop({}, {}, {}, {}, {}, {}, {},0, 0, 0, 0, 0, 0)
     }
 }
 
@@ -351,7 +411,7 @@ fun ShopPreview() {
 @Composable
 fun HomePreview() {
     BeanBuilderTheme {
-        BeanScreen(0, {}) {}
+        BeanScreen(0, {}, {}) {}
     }
 }
 

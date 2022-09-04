@@ -2,7 +2,7 @@ package com.mulholland.beanbuilder.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val greenPrimary = Color(0xFF93DF3A)
+val greenAccent = Color(0xFF689C2A)
+val bluePrimary = Color(0xFF036FA5)
+val blueAccent = Color(0xFF024E75)
